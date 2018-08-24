@@ -1,0 +1,17 @@
+<h2>
+  Game statistics
+</h2>
+<table class='table table-striped'>
+    <thead>
+        <tr>
+            <th>Player name</th>
+            <th>Units</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let player of players">
+          <td>{{player.name}}</td>
+          <td>{{player.units}}</td>
+        </tr>
+    </tbody>
+</table>

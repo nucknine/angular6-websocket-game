@@ -2,7 +2,7 @@ import { map } from 'rxjs/operators';
 import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { WebsocketService } from './websocket.service';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 
 
 export interface Message {

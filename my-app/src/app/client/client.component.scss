@@ -1,0 +1,58 @@
+$base-color:mediumaquamarine;
+$message-box-color: mediumvioletred;
+$unit-color: crimson;
+
+@keyframes color-change {
+    0%   {background-color: crimson; border-radius: 0; transform: scale(1)}
+    25%  {background-color: mediumslateblue; border-radius: 50%; transform: scale(.7)}
+    50%  {background-color: mediumturquoise; border-radius: 0; transform: scale(1.2)}
+    75%  {background-color: mediumpurple; border-radius: 50%; transform: scale(.5)}
+    100% {background-color: crimson; border-radius: 0; transform: scale(1)}
+}
+
+.base {
+    background-color: $base-color;
+    position: relative;
+    width: 1000px;
+    height: 500px;
+}
+
+.messages {
+    color: white;
+    display: block;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    background-color: $message-box-color;
+    max-height: 55px;
+    overflow-y: hidden;
+}
+
+.help {
+    background: transparent;
+    top: 0px;
+    color: black;
+}
+
+.unit {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    line-height: 60px;
+    box-sizing: border-box;
+    padding: 5px;
+    color: whitesmoke;
+    text-align: center;
+    font-size: 1.2em;
+    border: 2px solid whitesmoke;
+    width: 80px;
+    height: 60px;
+    background-color: $unit-color;
+    position: absolute;
+    border-radius: 0;
+    transition: all .3s ease-in-out;
+    animation: color-change 8s ease-in .5s infinite;
+}
+
+
+

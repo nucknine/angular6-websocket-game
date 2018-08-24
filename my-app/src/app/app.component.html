@@ -1,25 +1,2 @@
-<div
-  (drop)="drop($event)"
-  (dragover)="dragover($event)"
-  class="base"
-  id="base"
-  (dblclick)=onClick($event) >
-  <ul id="messages" class="messages"></ul>
-  <ul class="messages help">
-    <li>doubleclick to create a unit</li>
-    <li>drag to move a unit</li>
-  </ul>
-  <div *ngFor="let unit of units"
-    [id]="unit.target"
-    class="unit"
-    draggable="true"
-    [style.top]=unit.clientY
-    [style.left]=unit.clientX
-    (dragstart)="dragstart($event)"
-    >{{unit.name}}
-  </div>
-</div>
-<button (click)="sendHello(name)">hello</button>
-<audio id="audio-cr" src="https://www.soundjay.com/button/beep-25.mp3" autostart="false" ></audio>
-<audio id="audio-er" src="https://www.soundjay.com/button/button-42.mp3" autostart="false" ></audio>
-<audio id="audio-drag" src="https://www.soundjay.com/button/button-43.mp3" autostart="false" ></audio>
+<h2>Brick game</h2>
+<router-outlet></router-outlet>
