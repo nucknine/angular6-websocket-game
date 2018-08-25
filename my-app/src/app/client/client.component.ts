@@ -13,6 +13,7 @@ export class ClientComponent {
 
   units: Array<Unit> = [];
   name;
+  lastCoords;
   currentDrag;
   data = {
     target: '',
@@ -53,9 +54,17 @@ export class ClientComponent {
   }
 
   onDbClick(e) {
+    console.log(e);
     if(!this.name) {
       this.askName();
     }
+    if (e.type == 'touchstart') {
+      e = e.changedTouches[0];
+    }
+    // if (e.target == 'button') {
+    //   e.clientX = '500';
+    //   e.clientY = '500';
+    // }
     this.data.clientX = e.clientX;
     this.data.clientY = e.clientY;
 
@@ -123,6 +132,10 @@ export class ClientComponent {
     this.sendToServer(message);
   }
 
+  prevent(e) {
+    e.preventDefault();
+  }
+
   canDrag(e) {
       return this.units.find(x => x.target == e).name == this.data.name;
   }
@@ -136,6 +149,11 @@ export class ClientComponent {
   }
 
   drop(ev) {
+    ev.preventDefault();
+    if (ev.type == 'touchend') {
+      ev = ev.changedTouches[0];
+      console.log('touchend');
+    }
     if(!this.canDrag(this.currentDrag.id)) {
       let audio = <HTMLAudioElement>document.getElementById("audio-er");
       let message = {
@@ -148,7 +166,6 @@ export class ClientComponent {
     let audio = <HTMLAudioElement>document.getElementById("audio-drag");
     audio.play();
 
-    ev.preventDefault();
     this.currentDrag.style.top = ev.clientY + 'px';
     this.currentDrag.style.left = ev.clientX + 'px';
 

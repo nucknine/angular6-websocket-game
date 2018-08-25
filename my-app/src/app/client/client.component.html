@@ -1,9 +1,12 @@
 <div
   (drop)="drop($event)"
+  (touchmove)="prevent($event)"
   (dragover)="dragover($event)"
   class="base"
   id="base"
-  (dblclick)=onDbClick($event) >
+  (dblclick)="onDbClick($event)"
+  (touchstart)="onDbClick($event)"
+  >
   <ul class="messages help">
     <li>Welcome {{name}}!</li>
     <li>doubleclick to create a unit</li>
@@ -17,10 +20,14 @@
     [style.top]=unit.clientY
     [style.left]=unit.clientX
     (dragstart)="dragstart($event)"
+    (touchstart)="dragstart($event)"
+    (touchend)="drop($event)"
     >{{unit.name}}
   </div>
 </div>
+<input type="text">
 <button (click)="sendHello(name)">hello</button>
+<button (click)="onDbClick($event)">create new unit</button>
 <audio id="audio-cr" src="https://www.soundjay.com/button/beep-25.mp3" autostart="false" ></audio>
 <audio id="audio-er" src="https://www.soundjay.com/button/button-42.mp3" autostart="false" ></audio>
 <audio id="audio-drag" src="https://www.soundjay.com/button/button-43.mp3" autostart="false" ></audio>
