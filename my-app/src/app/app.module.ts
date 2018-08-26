@@ -1,5 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
+import { FormsModule } from "@angular/forms";
 
 import { AppComponent } from './app.component';
 import { WebsocketService } from './shared/websocket.service';
@@ -22,6 +23,7 @@ import { UnitsService } from './shared/units.service';
   ],
   imports: [
     BrowserModule,
+    FormsModule,
     RouterModule.forRoot(routes)
   ],
   providers: [ WebsocketService, ChatService, UnitsService],

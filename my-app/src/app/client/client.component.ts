@@ -12,6 +12,7 @@ import { UnitsService } from '../shared/units.service';
 export class ClientComponent {
 
   units: Array<Unit> = [];
+  text: string;
   name;
   lastCoords;
   currentDrag;
@@ -54,19 +55,19 @@ export class ClientComponent {
   }
 
   onDbClick(e) {
-    console.log(e);
     if(!this.name) {
       this.askName();
     }
     if (e.type == 'touchstart') {
       e = e.changedTouches[0];
     }
-    // if (e.target == 'button') {
-    //   e.clientX = '500';
-    //   e.clientY = '500';
-    // }
-    this.data.clientX = e.clientX;
-    this.data.clientY = e.clientY;
+    if (e.target.id = 'create-btn') {
+      this.data.clientX = '250';
+      this.data.clientY = '250';
+    } else {
+      this.data.clientX = e.clientX;
+      this.data.clientY = e.clientY;
+    }
 
     if(e.target.classList.contains('unit')) {
       this.data.target = e.target.id;
@@ -113,7 +114,7 @@ export class ClientComponent {
         if(message.type == 'unit-drop') {
           messageItem.textContent = `Player ${message.data.name} has moved a ${message.data.target} unit!`;
         } else if (message.type == 'hello') {
-          messageItem.textContent = `hello from ${message.data.name}!`;
+          messageItem.textContent = `${message.data.name} said: ${message.data.text}`;
         } else if (message.type == 'unit-create') {
           messageItem.textContent = `Player ${message.data.name} has created the ${message.data.target} unit!`;
         } else if (message.type == 'drag-err') {
@@ -126,8 +127,12 @@ export class ClientComponent {
   sendHello() {
     var message = {
         type: 'hello',
-        data: { name: this.name }
+        data: {
+          name: this.name,
+          text: this.text
+        }
     };
+    this.addMessage(message);
 
     this.sendToServer(message);
   }
