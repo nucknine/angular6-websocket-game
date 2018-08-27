@@ -10,17 +10,15 @@ import { UnitsService } from '../shared/units.service';
   styleUrls: ['./client.component.scss']
 })
 export class ClientComponent {
-
   units: Array<Unit> = [];
   text: string;
   name: string;
-  lastCoords;
-  currentDrag;
+  currentDrag: HTMLElement;
   data = {
-    target: '',
-    name: '',
-    clientX: '',
-    clientY: ''
+    target: <string> null,
+    name: <string> null,
+    clientX: <string> null,
+    clientY: <string> null
   }
 
   constructor(private chatService: ChatService, private unitService: UnitsService) {
