@@ -13,7 +13,7 @@ export class ClientComponent {
 
   units: Array<Unit> = [];
   text: string;
-  name;
+  name: string;
   lastCoords;
   currentDrag;
   data = {
@@ -43,9 +43,11 @@ export class ClientComponent {
 
   askName() {
     this.name = prompt('Как вас зовут?');
-    if(!this.name) {
+    if(this.name) {
       this.sendHello();
       this.units = this.unitService.getUnits();
+    } else {
+      this.askName();
     }
   }
 
@@ -61,14 +63,13 @@ export class ClientComponent {
     if (e.type == 'touchstart') {
       e = e.changedTouches[0];
     }
-    if (e.target.id = 'create-btn') {
+    if (e.target.id == 'create-btn') {
       this.data.clientX = '250';
       this.data.clientY = '250';
     } else {
       this.data.clientX = e.clientX;
       this.data.clientY = e.clientY;
     }
-
     if(e.target.classList.contains('unit')) {
       this.data.target = e.target.id;
       var message = {
