@@ -71,7 +71,7 @@ export class ClientComponent {
     if(e.target.classList.contains('unit')) {
       this.data.target = e.target.id;
       var message = {
-        type: 'unit-click',
+        type: <string> 'unit-click',
         data: this.data
       }
       console.log('info about unit:');
@@ -80,7 +80,7 @@ export class ClientComponent {
       this.data.target = Date.now().toString();
       this.data.name = this.name;
       var message = {
-        type: 'unit-create',
+        type: <string> 'unit-create',
         data: this.data
       };
       this.createUnit(message);
@@ -125,7 +125,7 @@ export class ClientComponent {
 
   sendHello() {
     var message = {
-        type: 'hello',
+        type: <string> 'hello',
         data: {
           name: this.name,
           text: this.text
@@ -161,7 +161,7 @@ export class ClientComponent {
     if(!this.canDrag(this.currentDrag.id)) {
       let audio = <HTMLAudioElement>document.getElementById("audio-er");
       let message = {
-        type: 'drag-err'
+        type: <string> 'drag-err'
       };
       this.addMessage(message);
       audio.play();
@@ -178,7 +178,7 @@ export class ClientComponent {
     this.data.clientY = ev.clientY;
 
     var message = {
-      type: 'unit-drop',
+      type: <string> 'unit-drop',
       data: this.data
     }
 
