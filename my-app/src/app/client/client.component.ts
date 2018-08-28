@@ -18,7 +18,7 @@ export class ClientComponent {
   currentDrag;
   data = {
     target: '',
-    name: '',
+    name: 'd',
     clientX: '',
     clientY: ''
   }
@@ -61,7 +61,7 @@ export class ClientComponent {
     if (e.type == 'touchstart') {
       e = e.changedTouches[0];
     }
-    if (e.target.id = 'create-btn') {
+    if (e.target.id == 'create-btn') {
       this.data.clientX = '250';
       this.data.clientY = '250';
     } else {
@@ -146,6 +146,7 @@ export class ClientComponent {
   }
 
   dragstart(ev) {
+    console.log(ev)
     this.currentDrag = ev.target;
   }
 
@@ -159,6 +160,7 @@ export class ClientComponent {
       ev = ev.changedTouches[0];
       console.log('touchend');
     }
+    console.log(this.currentDrag);
     if(!this.canDrag(this.currentDrag.id)) {
       let audio = <HTMLAudioElement>document.getElementById("audio-er");
       let message = {
@@ -166,7 +168,6 @@ export class ClientComponent {
       };
       this.addMessage(message);
       audio.play();
-      return;
     }
     let audio = <HTMLAudioElement>document.getElementById("audio-drag");
     audio.play();
