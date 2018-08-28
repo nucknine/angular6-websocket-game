@@ -10,17 +10,15 @@ import { UnitsService } from '../shared/units.service';
   styleUrls: ['./client.component.scss']
 })
 export class ClientComponent {
-
   units: Array<Unit> = [];
   text: string;
-  name;
-  lastCoords;
-  currentDrag;
+  name: string;
+  currentDrag: HTMLElement;
   data = {
-    target: '',
-    name: 'd',
-    clientX: '',
-    clientY: ''
+    target: <string> null,
+    name: <string> null,
+    clientX: <string> null,
+    clientY: <string> null
   }
 
   constructor(private chatService: ChatService, private unitService: UnitsService) {
@@ -43,9 +41,11 @@ export class ClientComponent {
 
   askName() {
     this.name = prompt('Как вас зовут?');
-    if(!this.name) {
+    if(this.name) {
       this.sendHello();
       this.units = this.unitService.getUnits();
+    } else {
+      this.askName();
     }
   }
 
@@ -68,11 +68,10 @@ export class ClientComponent {
       this.data.clientX = e.clientX;
       this.data.clientY = e.clientY;
     }
-
     if(e.target.classList.contains('unit')) {
       this.data.target = e.target.id;
       var message = {
-        type: 'unit-click',
+        type: <string> 'unit-click',
         data: this.data
       }
       console.log('info about unit:');
@@ -81,7 +80,7 @@ export class ClientComponent {
       this.data.target = Date.now().toString();
       this.data.name = this.name;
       var message = {
-        type: 'unit-create',
+        type: <string> 'unit-create',
         data: this.data
       };
       this.createUnit(message);
@@ -126,7 +125,7 @@ export class ClientComponent {
 
   sendHello() {
     var message = {
-        type: 'hello',
+        type: <string> 'hello',
         data: {
           name: this.name,
           text: this.text
@@ -164,7 +163,7 @@ export class ClientComponent {
     if(!this.canDrag(this.currentDrag.id)) {
       let audio = <HTMLAudioElement>document.getElementById("audio-er");
       let message = {
-        type: 'drag-err'
+        type: <string> 'drag-err'
       };
       this.addMessage(message);
       audio.play();
@@ -180,7 +179,7 @@ export class ClientComponent {
     this.data.clientY = ev.clientY;
 
     var message = {
-      type: 'unit-drop',
+      type: <string> 'unit-drop',
       data: this.data
     }
 
