@@ -145,7 +145,6 @@ export class ClientComponent {
   }
 
   dragstart(ev) {
-    console.log(ev)
     this.currentDrag = ev.target;
   }
 
@@ -159,7 +158,6 @@ export class ClientComponent {
       ev = ev.changedTouches[0];
       console.log('touchend');
     }
-    console.log(this.currentDrag);
     if(!this.canDrag(this.currentDrag.id)) {
       let audio = <HTMLAudioElement>document.getElementById("audio-er");
       let message = {
@@ -167,12 +165,13 @@ export class ClientComponent {
       };
       this.addMessage(message);
       audio.play();
+      return;
     }
     let audio = <HTMLAudioElement>document.getElementById("audio-drag");
     audio.play();
 
-    this.currentDrag.style.top = ev.clientY + 'px';
-    this.currentDrag.style.left = ev.clientX + 'px';
+    this.currentDrag.style.top = ev.clientY - this.currentDrag.offsetHeight / 2 + 'px';
+    this.currentDrag.style.left = ev.clientX - this.currentDrag.offsetWidth / 2 + 'px';
 
     this.data.target = this.currentDrag.id;
     this.data.clientX = ev.clientX;
