@@ -11,6 +11,7 @@ $unit-color: crimson;
 }
 
 .base {
+    user-select: none;
     background-color: $base-color;
     position: relative;
     width: 1000px;
@@ -18,6 +19,7 @@ $unit-color: crimson;
 }
 
 .messages {
+    user-select: none;
     color: white;
     display: block;
     position: absolute;
@@ -52,6 +54,10 @@ $unit-color: crimson;
     border-radius: 0;
     transition: all .3s ease-in-out;
     animation: color-change 8s ease-in .5s infinite;
+}
+
+.unit-name {
+    user-select: none;
 }
 
 

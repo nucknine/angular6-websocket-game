@@ -1,9 +1,9 @@
 <div
+  class="base"
+  id="base"
   (drop)="drop($event)"
   (touchmove)="prevent($event)"
   (dragover)="dragover($event)"
-  class="base"
-  id="base"
   (dblclick)="onDbClick($event)"
   (touchstart)="onDbClick($event)"
   >
@@ -14,15 +14,16 @@
   </ul>
   <ul id="messages" class="messages"></ul>
   <div *ngFor="let unit of units"
-    [id]="unit.target"
     class="unit"
     draggable="true"
+    [id]="unit.target"
     [style.top]=unit.clientY
     [style.left]=unit.clientX
-    (dragstart)="dragstart($event)"
+    (dragstart)="dragstart($event)"    
     (touchstart)="dragstart($event)"
-    (touchend)="drop($event)"
-    >{{unit.name}}
+    (touchend)="drop($event)"    
+    >
+    {{unit.name}}
   </div>
 </div>
 <input

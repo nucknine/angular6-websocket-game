@@ -42,7 +42,7 @@ export class ClientComponent {
   askName() {
     this.name = prompt('Как вас зовут?');
     if(this.name) {
-      this.sendHello();
+      // this.sendHello();
       this.units = this.unitService.getUnits();
     } else {
       this.askName();
@@ -89,8 +89,7 @@ export class ClientComponent {
   }
 
   createUnit(message){
-    let unit = document.createElement("div"),
-        base = document.querySelector("#base");
+    let unit = document.createElement("div");
 
     unit.classList.add("unit");
     unit.draggable = true;
@@ -113,7 +112,9 @@ export class ClientComponent {
         if(message.type == 'unit-drop') {
           messageItem.textContent = `Player ${message.data.name} has moved a ${message.data.target} unit!`;
         } else if (message.type == 'hello') {
-          messageItem.textContent = `${message.data.name} said: ${message.data.text}`;
+          if (message.data.text) {
+            messageItem.textContent = `${message.data.name} said: ${message.data.text}`;
+          }
         } else if (message.type == 'unit-create') {
           messageItem.textContent = `Player ${message.data.name} has created the ${message.data.target} unit!`;
         } else if (message.type == 'drag-err') {
@@ -124,16 +125,17 @@ export class ClientComponent {
   }
 
   sendHello() {
-    var message = {
-        type: <string> 'hello',
-        data: {
-          name: this.name,
-          text: this.text
-        }
-    };
-    this.addMessage(message);
-
-    this.sendToServer(message);
+    if(this.text && this.name) {
+      var message = {
+          type: <string> 'hello',
+          data: {
+            name: this.name,
+            text: this.text
+          }
+      };
+      this.addMessage(message);
+      this.sendToServer(message);
+    }
   }
 
   prevent(e) {
@@ -154,10 +156,18 @@ export class ClientComponent {
 
   drop(ev) {
     ev.preventDefault();
+    let base = document.querySelector("#base");
+
+
+    if(ev.target.classList.contains('unit') ) {
+      this.destroyUnit(ev.target.id);
+    }
+
     if (ev.type == 'touchend') {
       ev = ev.changedTouches[0];
-      console.log('touchend');
+      console.log(ev);
     }
+
     if(!this.canDrag(this.currentDrag.id)) {
       let audio = <HTMLAudioElement>document.getElementById("audio-er");
       let message = {
@@ -167,11 +177,27 @@ export class ClientComponent {
       audio.play();
       return;
     }
+
     let audio = <HTMLAudioElement>document.getElementById("audio-drag");
     audio.play();
 
-    this.currentDrag.style.top = ev.clientY - this.currentDrag.offsetHeight / 2 + 'px';
-    this.currentDrag.style.left = ev.clientX - this.currentDrag.offsetWidth / 2 + 'px';
+    // проверка левой/правой границы
+    if (base.clientHeight < ev.clientY + this.currentDrag.offsetHeight) {
+      this.currentDrag.style.top = base.clientHeight - this.currentDrag.offsetHeight + 'px';
+    } else if (ev.clientY < this.currentDrag.offsetHeight) {
+      this.currentDrag.style.top = 0 + 'px';
+    } else {
+      this.currentDrag.style.top = ev.clientY - this.currentDrag.offsetHeight + 'px';
+    }
+
+    // проверка нижней/верхней границы
+    if (base.clientWidth < ev.clientX + this.currentDrag.offsetWidth) {
+      this.currentDrag.style.left = base.clientWidth - this.currentDrag.offsetWidth + 'px';
+    } else if (ev.clientX < this.currentDrag.offsetWidth) {
+      this.currentDrag.style.left = 0 + 'px';
+    } else {
+      this.currentDrag.style.left = ev.clientX - this.currentDrag.offsetWidth + 'px';
+    }
 
     this.data.target = this.currentDrag.id;
     this.data.clientX = ev.clientX;
@@ -192,4 +218,17 @@ export class ClientComponent {
     unit.style.left = message.data.clientX + 'px';
   }
 
+  destroyUnit(id) {
+    let unit = this.units.find(x => x.target == id);
+
+    if(unit.name !== this.name) {
+      this.data.target = unit.target;
+      var message = {
+        type: <string> 'unit-delete',
+        data: this.data
+      }
+      this.unitService.deleteUnit(unit.target);
+      this.sendToServer(message); //todo
+    }
+  }
 }

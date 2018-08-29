@@ -15,6 +15,18 @@ export class UnitsService {
     units.push(un);
   }
 
+  deleteUnit(id) {
+    let delId = [id];
+      for (var i = 0; i < units.length; i++) {
+          var unit = units[i];
+
+          if (delId.indexOf(unit.target) !== -1) {
+              units.splice(i, 1);
+              i--;
+          }
+      }
+  }
+
   updateUnit(un) {
     var index = units.findIndex(u => u.target == un.target);
     units[index] = un;
