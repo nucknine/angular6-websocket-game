@@ -1,36 +1,41 @@
 import { Component, OnInit } from '@angular/core';
 import { ChatService } from '../shared/chat.service';
 import { Player } from './player';
+import { UnitsService } from '../shared/units.service';
 
 @Component({
   selector: 'app-host',
   templateUrl: './host.component.html',
   styleUrls: ['./host.component.scss']
 })
-export class HostComponent implements OnInit {
+export class HostComponent {
+  units;
   players: Array<Player> = [];
   currentName: string;
   currentUnits: number = 1;
 
-  constructor(private chatService: ChatService) {
+  constructor(private chatService: ChatService, private unitService: UnitsService) {
 
     chatService.messages.subscribe(msg => {
+      this.units = this.unitService.getUnits();
       if (msg.type == 'unit-create') {
-        console.log(msg);
-        this.updateStats(msg);
+        this.addUnit(msg);
+      } else if (msg.type == 'unit-delete'){
+        this.removeUnit(msg);
       }
     })
   }
 
-  ngOnInit() {
-  }
-
-  updateStats(message) {
-    this.currentName = message.data.name;
-    if (!this.players.find(x => x.name == this.currentName)) {
-      this.players.push(new Player(this.currentName, this.currentUnits));
+  addUnit(message) {
+    if (!this.players.find(x => x.name == message.data.name)) {
+      this.players.push(new Player(message.data.name, this.currentUnits));
     } else {
-      this.players.find(x => x.name == this.currentName).units += this.currentUnits;
+      this.players.find(x => x.name == message.data.name).units += 1;
     }
   }
+
+  removeUnit(message) {
+    this.players.find(x => x.name == message.data.deletedName).units -= 1;
+  }
+
 }

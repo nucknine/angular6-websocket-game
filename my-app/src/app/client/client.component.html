@@ -19,9 +19,9 @@
     [id]="unit.target"
     [style.top]=unit.clientY
     [style.left]=unit.clientX
-    (dragstart)="dragstart($event)"    
+    (dragstart)="dragstart($event)"
     (touchstart)="dragstart($event)"
-    (touchend)="drop($event)"    
+    (touchend)="drop($event)"
     >
     {{unit.name}}
   </div>
@@ -34,6 +34,9 @@
   #mInput>
 <button (click)="sendHello()" (click)="mInput.value=''">Send message</button>
 <button id="create-btn" (click)="onDbClick($event)">create new unit</button>
+<button (click)="test()">remove localy</button>
+<button (click)="do()">get</button>
+<button (click)="deleteOne()">deleteOne</button>
 <audio id="audio-cr" src="https://www.soundjay.com/button/beep-25.mp3" autostart="false" ></audio>
 <audio id="audio-er" src="https://www.soundjay.com/button/button-42.mp3" autostart="false" ></audio>
 <audio id="audio-drag" src="https://www.soundjay.com/button/button-43.mp3" autostart="false" ></audio>

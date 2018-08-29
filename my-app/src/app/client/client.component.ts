@@ -18,7 +18,8 @@ export class ClientComponent {
     target: <string> null,
     name: <string> null,
     clientX: <string> null,
-    clientY: <string> null
+    clientY: <string> null,
+    deletedName: <string> null
   }
 
   constructor(private chatService: ChatService, private unitService: UnitsService) {
@@ -34,15 +35,29 @@ export class ClientComponent {
       } else if (msg.type == 'unit-drop') {
         this.addMessage(msg);
         this.dropUnit(msg);
+      } else if (msg.type == 'unit-delete') {
+        this.addMessage(msg);
+        this.deleteUnit(msg);
       }
 
     })
   }
 
+  deleteOne() {
+    this.unitService.deleteOne();
+  }
+
+  test() {
+    this.units = [];
+  }
+
+  do() {
+    this.units = this.unitService.getUnits();
+  }
+
   askName() {
     this.name = prompt('Как вас зовут?');
     if(this.name) {
-      // this.sendHello();
       this.units = this.unitService.getUnits();
     } else {
       this.askName();
@@ -119,6 +134,8 @@ export class ClientComponent {
           messageItem.textContent = `Player ${message.data.name} has created the ${message.data.target} unit!`;
         } else if (message.type == 'drag-err') {
           messageItem.textContent = `sorry, you can move only your own unit!`;
+        } else if (message.type == 'unit-delete') {
+          messageItem.textContent = `Player ${message.data.name} destroyed ${message.data.target} unit!`;
         }
     messageContainer.appendChild(messageItem);
     messageContainer.scrollTop = messageContainer.scrollHeight;
@@ -159,13 +176,11 @@ export class ClientComponent {
     let base = document.querySelector("#base");
 
 
-    if(ev.target.classList.contains('unit') ) {
-      this.destroyUnit(ev.target.id);
-    }
-
+    // todo: destroy for touchend
     if (ev.type == 'touchend') {
       ev = ev.changedTouches[0];
-      console.log(ev);
+    } else if (ev.target.classList.contains('unit')) {
+      this.destroyUnit(ev.target.id);
     }
 
     if(!this.canDrag(this.currentDrag.id)) {
@@ -200,22 +215,22 @@ export class ClientComponent {
     }
 
     this.data.target = this.currentDrag.id;
-    this.data.clientX = ev.clientX;
-    this.data.clientY = ev.clientY;
+    this.data.clientX = this.currentDrag.style.left;
+    this.data.clientY = this.currentDrag.style.top;
 
     var message = {
       type: <string> 'unit-drop',
       data: this.data
     }
 
-    this.unitService.updateUnit(new Unit(message.data.target, message.data.name, this.currentDrag.style.left, this.currentDrag.style.top));
+    this.unitService.updateUnit(new Unit(this.currentDrag.id, this.name, this.currentDrag.style.left, this.currentDrag.style.top));
+    this.units = this.unitService.getUnits();
     this.sendToServer(message);
   }
 
   dropUnit(message) {
-    var unit = document.getElementById(message.data.target);
-    unit.style.top = message.data.clientY + 'px';
-    unit.style.left = message.data.clientX + 'px';
+    this.unitService.updateUnit(new Unit(message.data.target, message.data.name, message.data.clientX, message.data.clientY));
+    this.units = this.unitService.getUnits();
   }
 
   destroyUnit(id) {
@@ -223,12 +238,20 @@ export class ClientComponent {
 
     if(unit.name !== this.name) {
       this.data.target = unit.target;
+      this.data.deletedName = this.units.find(x => x.target == unit.target).name;
+
       var message = {
         type: <string> 'unit-delete',
         data: this.data
       }
       this.unitService.deleteUnit(unit.target);
-      this.sendToServer(message); //todo
+      this.units = this.unitService.getUnits();
+      this.sendToServer(message);
     }
+  }
+
+  deleteUnit(message) {
+    this.unitService.deleteUnit(message.data.target);
+    this.units = this.unitService.getUnits();
   }
 }
