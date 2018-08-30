@@ -22,7 +22,8 @@ export class ClientComponent {
     clientX: <string> null,
     clientY: <string> null,
     deletedName: <string> null,
-    points: <number> 0
+    points: <number> 0,
+    units: <Array<Unit>> null
   }
 
   constructor(private chatService: ChatService, private unitService: UnitsService) {
@@ -71,11 +72,9 @@ export class ClientComponent {
       e = e.changedTouches[0];
     }
     if (e.target.id == 'create-btn') {
-      let base = document.querySelector("#base");
-      this.data.clientX = Math.floor(Math.random()*(base.clientWidth - 80) + 1) + '';
-      this.data.clientY = Math.floor(Math.random()*(base.clientHeight - 80) + 1) + '';
+      this.data.clientX = this.getRandomCoords();
+      this.data.clientY = this.getRandomCoords();
     } else {
-      console.log(e);
       this.data.clientX = e.clientX - 60 + '';
       this.data.clientY = e.clientY - 80 + '';
     }
@@ -90,6 +89,7 @@ export class ClientComponent {
     } else {
       this.data.target = Date.now().toString();
       this.data.name = this.name;
+      this.data.units = this.units;
       var message = {
         type: <string> 'unit-create',
         data: this.data
@@ -101,6 +101,7 @@ export class ClientComponent {
 
   // создание нового блока
   createUnit(message){
+    console.log(message);
     this.unitService.addUnit(new Unit(message.data.target, message.data.name, message.data.clientX + 'px', message.data.clientY + 'px'));
     this.units = this.unitService.getUnits();
 
@@ -255,5 +256,10 @@ export class ClientComponent {
   deleteUnit(message) {
     this.unitService.deleteUnit(message.data.target);
     this.units = this.unitService.getUnits();
+  }
+
+  getRandomCoords() {
+    let base = document.querySelector("#base");
+    return Math.floor(Math.random()*(base.clientWidth - 80) + 1) + '';
   }
 }
