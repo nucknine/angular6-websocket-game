@@ -71,11 +71,13 @@ export class ClientComponent {
       e = e.changedTouches[0];
     }
     if (e.target.id == 'create-btn') {
-      this.data.clientX = '100';
-      this.data.clientY = '100';
+      let base = document.querySelector("#base");
+      this.data.clientX = Math.floor(Math.random()*(base.clientWidth - 80) + 1) + '';
+      this.data.clientY = Math.floor(Math.random()*(base.clientHeight - 80) + 1) + '';
     } else {
-      this.data.clientX = e.clientX;
-      this.data.clientY = e.clientY;
+      console.log(e);
+      this.data.clientX = e.clientX - 60 + '';
+      this.data.clientY = e.clientY - 80 + '';
     }
     if(e.target.classList.contains('unit')) {
       this.data.target = e.target.id;
@@ -99,16 +101,7 @@ export class ClientComponent {
 
   // создание нового блока
   createUnit(message){
-    let unit = document.createElement("div");
-
-    unit.classList.add("unit");
-    unit.draggable = true;
-    unit.textContent = this.name;
-    unit.setAttribute('id', message.data.target);
-    unit.style.top = message.data.clientY + 'px';
-    unit.style.left = message.data.clientX + 'px';
-
-    this.unitService.addUnit(new Unit(message.data.target, message.data.name, unit.style.left, unit.style.top));
+    this.unitService.addUnit(new Unit(message.data.target, message.data.name, message.data.clientX + 'px', message.data.clientY + 'px'));
     this.units = this.unitService.getUnits();
 
     let audio = <HTMLAudioElement>document.getElementById("audio-cr");

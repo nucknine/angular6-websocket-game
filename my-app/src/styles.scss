@@ -1,4 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+$dark-blue: rgba(29, 53, 87, 1);
+$blue: rgba(69, 123, 157, 1);
+$cream: rgba(241, 250, 238, 1);
+$red: rgba(230, 57, 70, 1);
+$light-blue: rgba(168, 218, 220, 1);
 
 .btn {
     border: none;
@@ -11,17 +16,19 @@
 }
 
 .btn-default {
-    background-color: #95F9E3;
+    background-color: $blue;
 }
 
 .btn-create {
-    background-color: mediumslateblue;
+    background-color: $blue;
+    flex: 1;
 }
 
 .btn-message {
-    background-color: #5FBFF9;
+    background-color: $red;
+    flex: 1;
 }
 
 .btn-danger {
-    background-color: #B24C63;
+    background-color: $red;
 }

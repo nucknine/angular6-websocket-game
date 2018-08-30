@@ -3,7 +3,9 @@
   <div class="info">
     <button (click)="started=!started" class="btn btn-message">Продолжить</button>
     <div class="rules">
-      Перемещайте свои блоки на блоки противника для получения очков
+      <p>Для создания блока используйте двойное нажите по полю или прикосновение на touch-устройстве.</p>
+      <p>Для перемещения блоков используйте drag & drop.</p>
+      <p>Перемещайте свои блоки на блоки противника для получения очков.</p>
     </div>
   </div>
 </div>
@@ -17,9 +19,7 @@
   (touchstart)="baseDbClick($event)"
   >
   <ul class="messages help">
-    <li>{{name}} points: {{points}}</li>
-    <li>doubleclick to create a unit</li>
-    <li>drag to move a unit</li>
+    <li>Очки игрока {{name}}: {{points}}</li>
   </ul>
   <ul id="messages" class="messages"></ul>
   <div *ngFor="let unit of units"
