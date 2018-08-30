@@ -16,7 +16,7 @@
   (touchmove)="prevent($event)"
   (dragover)="dragover($event)"
   (dblclick)="baseDbClick($event)"
-  (touchstart)="baseDbClick($event)"
+  (touchstart)="baseDbClick($event)"  
   >
   <ul class="messages help">
     <li>Очки игрока {{name}}: {{points}}</li>
@@ -28,6 +28,7 @@
     [id]="unit.target"
     [style.top]=unit.clientY
     [style.left]=unit.clientX
+    (click)="info($event)"
     (dragstart)="dragstart($event)"
     (touchstart)="dragstart($event)"
     (touchend)="drop($event)"

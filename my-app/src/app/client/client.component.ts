@@ -25,6 +25,10 @@ export class ClientComponent {
     points: <number> 0,
     units: <Array<Unit>> null
   }
+  dragInfo = {
+    offsetX: <number> null,
+    offsetY: <number> null
+  };
 
   constructor(private chatService: ChatService, private unitService: UnitsService) {
 
@@ -46,12 +50,17 @@ export class ClientComponent {
 
     })
   }
+  
+  //обновление массива блоков
+  updateUnits(){
+    this.units = this.unitService.getUnits();
+  }
 
   // запрос имени игрока
   askName() {
     this.name = prompt('Как вас зовут?');
     if(this.name) {
-      this.units = this.unitService.getUnits();
+      this.updateUnits();
     } else {
       this.askName();
     }
@@ -72,8 +81,8 @@ export class ClientComponent {
       e = e.changedTouches[0];
     }
     if (e.target.id == 'create-btn') {
-      this.data.clientX = this.getRandomCoords();
-      this.data.clientY = this.getRandomCoords();
+      this.data.clientX = this.getRandomCoords('x');
+      this.data.clientY = this.getRandomCoords('y');
     } else {
       this.data.clientX = e.clientX - 60 + '';
       this.data.clientY = e.clientY - 80 + '';
@@ -89,7 +98,7 @@ export class ClientComponent {
     } else {
       this.data.target = Date.now().toString();
       this.data.name = this.name;
-      this.data.units = this.units;
+      // this.data.units = this.units;
       var message = {
         type: <string> 'unit-create',
         data: this.data
@@ -103,7 +112,7 @@ export class ClientComponent {
   createUnit(message){
     console.log(message);
     this.unitService.addUnit(new Unit(message.data.target, message.data.name, message.data.clientX + 'px', message.data.clientY + 'px'));
-    this.units = this.unitService.getUnits();
+    this.updateUnits();
 
     let audio = <HTMLAudioElement>document.getElementById("audio-cr");
     audio.play();
@@ -156,7 +165,12 @@ export class ClientComponent {
   }
 
   dragstart(ev) {
+    console.log(ev);
     this.currentDrag = ev.target;
+    if (ev.type !== 'touchstart') {
+      this.dragInfo.offsetX = ev.offsetX;
+      this.dragInfo.offsetY = ev.offsetY;
+    }
   }
 
   dragover(ev) {
@@ -191,22 +205,22 @@ export class ClientComponent {
     let audio = <HTMLAudioElement>document.getElementById("audio-drag");
     audio.play();
 
-    // проверка левой/правой границы игрового поля
+    // проверка нижней/верхней границы игрового поля
     if (base.clientHeight < ev.clientY + this.currentDrag.offsetHeight) {
       this.currentDrag.style.top = base.clientHeight - this.currentDrag.offsetHeight + 'px';
-    } else if (ev.clientY < this.currentDrag.offsetHeight) {
+    } else if (ev.clientY < this.currentDrag.offsetHeight + this.dragInfo.offsetY) {
       this.currentDrag.style.top = 0 + 'px';
     } else {
-      this.currentDrag.style.top = ev.clientY - this.currentDrag.offsetHeight + 'px';
+      this.currentDrag.style.top = ev.clientY - 67 - this.dragInfo.offsetY + 'px';
     }
 
-    // проверка нижней/верхней границы игрового поля
+    // проверка левой/правой границы игрового поля
     if (base.clientWidth < ev.clientX + this.currentDrag.offsetWidth) {
       this.currentDrag.style.left = base.clientWidth - this.currentDrag.offsetWidth + 'px';
     } else if (ev.clientX < this.currentDrag.offsetWidth) {
       this.currentDrag.style.left = 0 + 'px';
     } else {
-      this.currentDrag.style.left = ev.clientX - this.currentDrag.offsetWidth + 'px';
+      this.currentDrag.style.left = ev.clientX - 7 - this.dragInfo.offsetX + 'px';
     }
 
     this.data.target = this.currentDrag.id;
@@ -219,14 +233,14 @@ export class ClientComponent {
     }
 
     this.unitService.updateUnit(new Unit(this.currentDrag.id, this.name, this.currentDrag.style.left, this.currentDrag.style.top));
-    this.units = this.unitService.getUnits();
+    this.updateUnits();
     this.sendToServer(message);
   }
 
   // обработка события drop при получении сообщения от сервера
   dropUnit(message) {
     this.unitService.updateUnit(new Unit(message.data.target, message.data.name, message.data.clientX, message.data.clientY));
-    this.units = this.unitService.getUnits();
+    this.updateUnits();
   }
 
   // удаление определенного блока
@@ -243,7 +257,7 @@ export class ClientComponent {
         data: this.data
       }
       this.unitService.deleteUnit(unit.target);
-      this.units = this.unitService.getUnits();
+      this.updateUnits();
 
       let audio = <HTMLAudioElement>document.getElementById("audio-destroy");
       audio.play();
@@ -255,11 +269,13 @@ export class ClientComponent {
   // обработка события "удаление определенного блока" при получении сообщения от сервера
   deleteUnit(message) {
     this.unitService.deleteUnit(message.data.target);
-    this.units = this.unitService.getUnits();
+    this.updateUnits();
   }
 
-  getRandomCoords() {
+  // возврат случайной координаты для нового блока
+  getRandomCoords(x) {
     let base = document.querySelector("#base");
-    return Math.floor(Math.random()*(base.clientWidth - 80) + 1) + '';
+    let res = x == 'x' ? Math.floor(Math.random()*(base.clientWidth - 80) + 1) : Math.floor(Math.random()*(base.clientHeight - 80) + 1);
+    return res+'';
   }
 }
