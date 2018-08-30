@@ -13,13 +13,16 @@ export class ClientComponent {
   units: Array<Unit> = [];
   text: string;
   name: string;
+  points: number = 0;
   currentDrag: HTMLElement;
+  started: boolean = false;
   data = {
     target: <string> null,
     name: <string> null,
     clientX: <string> null,
     clientY: <string> null,
-    deletedName: <string> null
+    deletedName: <string> null,
+    points: <number> 0
   }
 
   constructor(private chatService: ChatService, private unitService: UnitsService) {
@@ -43,18 +46,7 @@ export class ClientComponent {
     })
   }
 
-  deleteOne() {
-    this.unitService.deleteOne();
-  }
-
-  test() {
-    this.units = [];
-  }
-
-  do() {
-    this.units = this.unitService.getUnits();
-  }
-
+  // запрос имени игрока
   askName() {
     this.name = prompt('Как вас зовут?');
     if(this.name) {
@@ -64,12 +56,14 @@ export class ClientComponent {
     }
   }
 
+  // отправка данных websocket на сервер
   sendToServer(message) {
     console.log(`New message ${message.type}`);
     this.chatService.messages.next(message);
   }
 
-  onDbClick(e) {
+  // обработка двойного нажатия по полю, либо прикосновения на touch-устройствах
+  baseDbClick(e) {
     if(!this.name) {
       this.askName();
     }
@@ -77,8 +71,8 @@ export class ClientComponent {
       e = e.changedTouches[0];
     }
     if (e.target.id == 'create-btn') {
-      this.data.clientX = '250';
-      this.data.clientY = '250';
+      this.data.clientX = '100';
+      this.data.clientY = '100';
     } else {
       this.data.clientX = e.clientX;
       this.data.clientY = e.clientY;
@@ -103,6 +97,7 @@ export class ClientComponent {
     this.sendToServer(message);
   }
 
+  // создание нового блока
   createUnit(message){
     let unit = document.createElement("div");
 
@@ -120,6 +115,7 @@ export class ClientComponent {
     audio.play();
   }
 
+  // добавление лога поле информации
   addMessage(message) {
     var messageContainer = document.querySelector('#messages'),
         messageItem = document.createElement('li');
@@ -141,6 +137,7 @@ export class ClientComponent {
     messageContainer.scrollTop = messageContainer.scrollHeight;
   }
 
+  // отправка сообщения в чат
   sendHello() {
     if(this.text && this.name) {
       var message = {
@@ -159,6 +156,7 @@ export class ClientComponent {
     e.preventDefault();
   }
 
+  // проверка на возможность перетасивать блок
   canDrag(e) {
       return this.units.find(x => x.target == e).name == this.data.name;
   }
@@ -171,14 +169,17 @@ export class ClientComponent {
     ev.preventDefault();
   }
 
+  // обработка события drop или touchend для touch устройств
   drop(ev) {
     ev.preventDefault();
     let base = document.querySelector("#base");
 
-
-    // todo: destroy for touchend
     if (ev.type == 'touchend') {
       ev = ev.changedTouches[0];
+      let touchTarget = document.elementFromPoint(ev.clientX, ev.clientY);
+      if (touchTarget.classList.contains('unit')) {
+        this.destroyUnit(touchTarget.id);
+      }
     } else if (ev.target.classList.contains('unit')) {
       this.destroyUnit(ev.target.id);
     }
@@ -196,7 +197,7 @@ export class ClientComponent {
     let audio = <HTMLAudioElement>document.getElementById("audio-drag");
     audio.play();
 
-    // проверка левой/правой границы
+    // проверка левой/правой границы игрового поля
     if (base.clientHeight < ev.clientY + this.currentDrag.offsetHeight) {
       this.currentDrag.style.top = base.clientHeight - this.currentDrag.offsetHeight + 'px';
     } else if (ev.clientY < this.currentDrag.offsetHeight) {
@@ -205,7 +206,7 @@ export class ClientComponent {
       this.currentDrag.style.top = ev.clientY - this.currentDrag.offsetHeight + 'px';
     }
 
-    // проверка нижней/верхней границы
+    // проверка нижней/верхней границы игрового поля
     if (base.clientWidth < ev.clientX + this.currentDrag.offsetWidth) {
       this.currentDrag.style.left = base.clientWidth - this.currentDrag.offsetWidth + 'px';
     } else if (ev.clientX < this.currentDrag.offsetWidth) {
@@ -228,17 +229,20 @@ export class ClientComponent {
     this.sendToServer(message);
   }
 
+  // обработка события drop при получении сообщения от сервера
   dropUnit(message) {
     this.unitService.updateUnit(new Unit(message.data.target, message.data.name, message.data.clientX, message.data.clientY));
     this.units = this.unitService.getUnits();
   }
 
+  // удаление определенного блока
   destroyUnit(id) {
     let unit = this.units.find(x => x.target == id);
 
     if(unit.name !== this.name) {
       this.data.target = unit.target;
       this.data.deletedName = this.units.find(x => x.target == unit.target).name;
+      this.data.points = ++this.points;
 
       var message = {
         type: <string> 'unit-delete',
@@ -246,10 +250,15 @@ export class ClientComponent {
       }
       this.unitService.deleteUnit(unit.target);
       this.units = this.unitService.getUnits();
+
+      let audio = <HTMLAudioElement>document.getElementById("audio-destroy");
+      audio.play();
+
       this.sendToServer(message);
     }
   }
 
+  // обработка события "удаление определенного блока" при получении сообщения от сервера
   deleteUnit(message) {
     this.unitService.deleteUnit(message.data.target);
     this.units = this.unitService.getUnits();

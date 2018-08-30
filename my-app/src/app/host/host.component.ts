@@ -35,7 +35,9 @@ export class HostComponent {
   }
 
   removeUnit(message) {
+    console.log(message.data.points);
     this.players.find(x => x.name == message.data.deletedName).units -= 1;
+    this.players.find(x => x.name == message.data.name).points = message.data.points;
   }
 
 }

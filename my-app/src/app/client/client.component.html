@@ -1,14 +1,23 @@
+<div class="wrapper">
+<div class="overlay" *ngIf="!started">
+  <div class="info">
+    <button (click)="started=!started" class="btn btn-message">Продолжить</button>
+    <div class="rules">
+      Перемещайте свои блоки на блоки противника для получения очков
+    </div>
+  </div>
+</div>
 <div
   class="base"
   id="base"
   (drop)="drop($event)"
   (touchmove)="prevent($event)"
   (dragover)="dragover($event)"
-  (dblclick)="onDbClick($event)"
-  (touchstart)="onDbClick($event)"
+  (dblclick)="baseDbClick($event)"
+  (touchstart)="baseDbClick($event)"
   >
   <ul class="messages help">
-    <li>Welcome {{name}}!</li>
+    <li>{{name}} points: {{points}}</li>
     <li>doubleclick to create a unit</li>
     <li>drag to move a unit</li>
   </ul>
@@ -26,17 +35,19 @@
     {{unit.name}}
   </div>
 </div>
-<input
+<div class="interface">
+  <input
+  class="input-message"
   type="text"
   (keyup.enter)="sendHello()"
   (keyup.enter)="mInput.value=''"
   [(ngModel)]="text"
   #mInput>
-<button (click)="sendHello()" (click)="mInput.value=''">Send message</button>
-<button id="create-btn" (click)="onDbClick($event)">create new unit</button>
-<button (click)="test()">remove localy</button>
-<button (click)="do()">get</button>
-<button (click)="deleteOne()">deleteOne</button>
+  <button class="btn-message btn" (click)="sendHello()" [disabled]="!mInput.value" (click)="mInput.value=''">Send message</button>
+  <button id="create-btn" class="btn-create btn" (click)="baseDbClick($event)">Create new unit</button>
+</div>
 <audio id="audio-cr" src="https://www.soundjay.com/button/beep-25.mp3" autostart="false" ></audio>
 <audio id="audio-er" src="https://www.soundjay.com/button/button-42.mp3" autostart="false" ></audio>
 <audio id="audio-drag" src="https://www.soundjay.com/button/button-43.mp3" autostart="false" ></audio>
+<audio id="audio-destroy" src="https://www.soundjay.com/button/button-48.mp3" autostart="false" ></audio>
+</div>

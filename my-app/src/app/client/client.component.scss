@@ -1,6 +1,6 @@
-$base-color:mediumaquamarine;
-$message-box-color: mediumvioletred;
-$unit-color: crimson;
+$base-color:#312F2F;
+$message-box-color: #B24C63;
+$unit-color: #B24C63;
 
 @keyframes color-change {
     0%   {background-color: crimson; border-radius: 0; transform: scale(1)}
@@ -10,17 +10,48 @@ $unit-color: crimson;
     100% {background-color: crimson; border-radius: 0; transform: scale(1)}
 }
 
+.wrapper {
+    position: relative;
+}
+
+.overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,.5);
+}
+
+.info {
+    text-align: center;
+}
+
+.rules {
+    margin-top: 20px;
+    color: white;
+    font-size: 20px;
+    text-align: center;
+}
+
 .base {
     user-select: none;
     background-color: $base-color;
     position: relative;
-    width: 1000px;
+    width: 100%;
     height: 500px;
 }
 
 .messages {
+    padding: 0 0 0 10px;
+    font-size: 16px;
+    list-style: none;
     user-select: none;
-    color: white;
+    color: #EFE9F4;
     display: block;
     position: absolute;
     top: 60px;
@@ -33,7 +64,7 @@ $unit-color: crimson;
 .help {
     background: transparent;
     top: 0px;
-    color: black;
+    color: #EFE9F4;
 }
 
 .unit {
@@ -58,6 +89,15 @@ $unit-color: crimson;
 
 .unit-name {
     user-select: none;
+}
+
+.interface {
+    width: 100%;
+    display: flex;
+}
+
+.input-message {
+    flex: 1;
 }
 
 

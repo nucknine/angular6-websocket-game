@@ -6,12 +6,14 @@
         <tr>
             <th>Player name</th>
             <th>Units</th>
+            <th>Score</th>
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let player of players">
           <td>{{player.name}}</td>
           <td>{{player.units}}</td>
+          <td>{{player.points}}</td>
         </tr>
     </tbody>
 </table>
