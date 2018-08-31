@@ -1,14 +1,30 @@
 <div class="wrapper">
 <div class="overlay" *ngIf="!started">
   <div class="info">
-    <button (click)="started=!started" class="btn btn-message">Продолжить</button>
     <div class="rules">
-      <p>Для создания блока используйте двойное нажите по полю или прикосновение на touch-устройстве.</p>
-      <p>Для перемещения блоков используйте drag & drop.</p>
-      <p>Перемещайте свои блоки на блоки противника для получения очков.</p>
+      <h2>Правила:</h2>
+      <p>Каждому участнику доступно {{limit}} блоков.
+        Для создания блока используйте двойное нажите по полю или прикосновение на touch-устройстве.
+        Для перемещения блоков используйте drag & drop.
+        Перемещайте свои блоки на чужие для получения очков.</p>
+      <p>Побеждает игрок, первым уничтоживший все блоки соперника.</p>
     </div>
+    <button (click)="started=!started" class="btn btn-message">Продолжить</button>
   </div>
 </div>
+
+<div class="overlay" *ngIf="isWinner">
+  <div class="rules">
+    <h2>Поздравляем, вы победили!</h2>
+  </div>
+</div>
+
+<div class="overlay" *ngIf="isLoser">
+  <div class="rules">
+    <h2>К сожалению, вы проиграли</h2>
+  </div>
+</div>
+
 <div
   class="base"
   id="base"
@@ -16,10 +32,10 @@
   (touchmove)="prevent($event)"
   (dragover)="dragover($event)"
   (dblclick)="baseDbClick($event)"
-  (touchstart)="baseDbClick($event)"  
-  >
+  (touchstart)="baseDbClick($event)">
   <ul class="messages help">
     <li>Очки игрока {{name}}: {{points}}</li>
+    <li>Юнитов создано {{unitCount}} из {{limit}}</li>
   </ul>
   <ul id="messages" class="messages"></ul>
   <div *ngFor="let unit of units"
@@ -28,11 +44,9 @@
     [id]="unit.target"
     [style.top]=unit.clientY
     [style.left]=unit.clientX
-    (click)="info($event)"
     (dragstart)="dragstart($event)"
     (touchstart)="dragstart($event)"
-    (touchend)="drop($event)"
-    >
+    (touchend)="drop($event)">
     {{unit.name}}
   </div>
 </div>

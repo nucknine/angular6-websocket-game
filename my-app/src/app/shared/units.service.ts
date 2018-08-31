@@ -34,6 +34,10 @@ export class UnitsService {
     this.units[index] = un;
   }
 
+  checkLimit(name) {
+    return this.units.filter(x => x.name == name).length;
+  }
+
   units = [];
 }
 

@@ -14,6 +14,7 @@ $light-blue: rgba(168, 218, 220, 1);
 
 .wrapper {
     position: relative;
+    font-family: 'Roboto', sans-serif;
 }
 
 .overlay {
@@ -36,7 +37,7 @@ $light-blue: rgba(168, 218, 220, 1);
 .rules {
     margin-top: 20px;
     color: $cream;
-    font-size: 20px;
+    font-size: 16px;
     text-align: center;
 }
 
@@ -57,7 +58,7 @@ $light-blue: rgba(168, 218, 220, 1);
     color: $dark-blue;
     display: block;
     position: absolute;
-    top: 30px;
+    top: 40px;
     left: 0;
     background-color: $light-blue;
     max-height: 75px;

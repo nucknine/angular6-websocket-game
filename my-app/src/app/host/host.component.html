@@ -7,6 +7,7 @@
             <th>Player name</th>
             <th>Units</th>
             <th>Score</th>
+            <th *ngIf="winner">Result</th>
         </tr>
     </thead>
     <tbody>
@@ -14,6 +15,7 @@
           <td>{{player.name}}</td>
           <td>{{player.units}}</td>
           <td>{{player.points}}</td>
+          <td *ngIf="winner">{{player.winStatus}}</td>
         </tr>
     </tbody>
 </table>

@@ -13,6 +13,7 @@ export class HostComponent {
   players: Array<Player> = [];
   currentName: string;
   currentUnits: number = 1;
+  winner: boolean = false;
 
   constructor(private chatService: ChatService, private unitService: UnitsService) {
 
@@ -22,6 +23,8 @@ export class HostComponent {
         this.addUnit(msg);
       } else if (msg.type == 'unit-delete'){
         this.removeUnit(msg);
+      } else if (msg.type == 'winner'){
+        this.gameResult(msg.data.name);
       }
     })
   }
@@ -38,6 +41,11 @@ export class HostComponent {
     console.log(message.data.points);
     this.players.find(x => x.name == message.data.deletedName).units -= 1;
     this.players.find(x => x.name == message.data.name).points = message.data.points;
+  }
+
+  gameResult(name) {
+    this.winner = true;
+    this.players.find(x => x.name == name).winStatus = 'победа';
   }
 
 }

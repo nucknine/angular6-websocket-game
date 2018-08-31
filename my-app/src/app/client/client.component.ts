@@ -11,11 +11,15 @@ import { UnitsService } from '../shared/units.service';
 })
 export class ClientComponent {
   units: Array<Unit> = [];
+  limit: number = 3;
+  unitCount: number = 0;
   text: string;
   name: string;
   points: number = 0;
   currentDrag: HTMLElement;
   started: boolean = false;
+  isWinner: boolean = false;
+  isLoser: boolean = false;
   data = {
     target: <string> null,
     name: <string> null,
@@ -46,11 +50,13 @@ export class ClientComponent {
       } else if (msg.type == 'unit-delete') {
         this.addMessage(msg);
         this.deleteUnit(msg);
+      } else if (msg.type == 'winner'){
+        this.gameResult(msg.data.name);
       }
 
     })
   }
-  
+
   //обновление массива блоков
   updateUnits(){
     this.units = this.unitService.getUnits();
@@ -80,6 +86,7 @@ export class ClientComponent {
     if (e.type == 'touchstart') {
       e = e.changedTouches[0];
     }
+    //создание блока по кнопке "create"
     if (e.target.id == 'create-btn') {
       this.data.clientX = this.getRandomCoords('x');
       this.data.clientY = this.getRandomCoords('y');
@@ -95,6 +102,7 @@ export class ClientComponent {
       }
       console.log('info about unit:');
       console.dir(message.data);
+      this.sendToServer(message);
     } else {
       this.data.target = Date.now().toString();
       this.data.name = this.name;
@@ -103,19 +111,47 @@ export class ClientComponent {
         type: <string> 'unit-create',
         data: this.data
       };
-      this.createUnit(message);
+      if(this.createUnit(message)) {
+        this.sendToServer(message);
+      }
     }
-    this.sendToServer(message);
   }
 
   // создание нового блока
   createUnit(message){
-    console.log(message);
-    this.unitService.addUnit(new Unit(message.data.target, message.data.name, message.data.clientX + 'px', message.data.clientY + 'px'));
-    this.updateUnits();
+    if(this.getUnitsCount(message.data.name) >= this.limit || this.unitCount >= this.limit) {
+      if(this.name == message.data.name) {
+        let audio = <HTMLAudioElement>document.getElementById("audio-er");
+        audio.play();
 
-    let audio = <HTMLAudioElement>document.getElementById("audio-cr");
-    audio.play();
+        return false;
+      } else {
+        this.unitService.addUnit(new Unit(message.data.target, message.data.name, message.data.clientX + 'px', message.data.clientY + 'px'));
+        this.updateUnits();
+
+        let audio = <HTMLAudioElement>document.getElementById("audio-cr");
+        audio.play();
+
+        return true;
+      }
+    } else {
+      if(this.name == message.data.name) {
+        this.unitCount++;
+      }
+
+      this.unitService.addUnit(new Unit(message.data.target, message.data.name, message.data.clientX + 'px', message.data.clientY + 'px'));
+      this.updateUnits();
+
+      let audio = <HTMLAudioElement>document.getElementById("audio-cr");
+      audio.play();
+
+      return true;
+    }
+  }
+
+  // проверка превышения допустимого количества блоков
+  getUnitsCount(name) {
+    return this.unitService.checkLimit(name);
   }
 
   // добавление лога поле информации
@@ -164,8 +200,8 @@ export class ClientComponent {
       return this.units.find(x => x.target == e).name == this.data.name;
   }
 
+  //обработка начала перемещения блока
   dragstart(ev) {
-    console.log(ev);
     this.currentDrag = ev.target;
     if (ev.type !== 'touchstart') {
       this.dragInfo.offsetX = ev.offsetX;
@@ -185,7 +221,7 @@ export class ClientComponent {
     if (ev.type == 'touchend') {
       ev = ev.changedTouches[0];
       let touchTarget = document.elementFromPoint(ev.clientX, ev.clientY);
-      if (touchTarget.classList.contains('unit')) {
+      if (touchTarget.classList.contains('unit') && this.currentDrag.id != touchTarget.id) {
         this.destroyUnit(touchTarget.id);
       }
     } else if (ev.target.classList.contains('unit')) {
@@ -193,11 +229,11 @@ export class ClientComponent {
     }
 
     if(!this.canDrag(this.currentDrag.id)) {
-      let audio = <HTMLAudioElement>document.getElementById("audio-er");
       let message = {
         type: <string> 'drag-err'
       };
       this.addMessage(message);
+      let audio = <HTMLAudioElement>document.getElementById("audio-er");
       audio.play();
       return;
     }
@@ -252,6 +288,8 @@ export class ClientComponent {
       this.data.deletedName = this.units.find(x => x.target == unit.target).name;
       this.data.points = ++this.points;
 
+      this.checkPoints();
+
       var message = {
         type: <string> 'unit-delete',
         data: this.data
@@ -277,5 +315,27 @@ export class ClientComponent {
     let base = document.querySelector("#base");
     let res = x == 'x' ? Math.floor(Math.random()*(base.clientWidth - 80) + 1) : Math.floor(Math.random()*(base.clientHeight - 80) + 1);
     return res+'';
+  }
+
+  //проверка набора очков
+  checkPoints(){
+    if (this.points == this.limit) {
+      this.isWinner = true;
+      this.data.name = this.name;
+
+      let message = {
+        type: <string> 'winner',
+        data: this.data
+      };
+
+      this.sendToServer(message);
+    }
+  }
+
+  // проверка при окончании игры
+  gameResult(name) {
+    if (name != this.name) {
+      this.isLoser = true;
+    }
   }
 }
