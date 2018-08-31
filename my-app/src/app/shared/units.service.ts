@@ -4,20 +4,20 @@ import { Unit } from '../unit/unit';
 @Injectable()
 export class UnitsService {
 
-  getUnits() {
+  getUnits(): Array<Unit> {
     console.log(this.units);
     return this.units;
   }
 
-  addUnit(un) {
+  addUnit(un): void {
     this.units.push(un);
   }
 
-  deleteOne(){
+  deleteOne(): void {
     this.units.splice(0, 1);
   }
 
-  deleteUnit(id) {
+  deleteUnit(id): void {
     let delId = [id];
       for (var i = 0; i < this.units.length; i++) {
           var unit = this.units[i];
@@ -29,12 +29,12 @@ export class UnitsService {
       }
   }
 
-  updateUnit(un) {
+  updateUnit(un): void {
     var index = this.units.findIndex(u => u.target == un.target);
     this.units[index] = un;
   }
 
-  checkLimit(name) {
+  checkLimit(name): number {
     return this.units.filter(x => x.name == name).length;
   }
 

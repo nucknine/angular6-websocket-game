@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { WebsocketService } from './websocket.service';
 import { environment } from '../../environments/environment';
+import { Unit } from '../unit/unit';
 
 
 export interface Message {
@@ -12,6 +13,9 @@ export interface Message {
     name?: string,
     clientX?: string,
     clientY?: string,
+    deletedName?: string,
+    points?: number,
+    units?: Array<Unit>
   }
 }
 
@@ -26,7 +30,6 @@ export class ChatService {
       .connect(environment.WS_URL)
       .pipe(map((response: MessageEvent)  => {
         let data = JSON.parse(response.data);
-        console.log(data);
         return data
       }))
   }

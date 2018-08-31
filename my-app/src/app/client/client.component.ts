@@ -58,12 +58,12 @@ export class ClientComponent {
   }
 
   //обновление массива блоков
-  updateUnits(){
+  updateUnits(): void {
     this.units = this.unitService.getUnits();
   }
 
   // запрос имени игрока
-  askName() {
+  askName(): void {
     this.name = prompt('Как вас зовут?');
     if(this.name) {
       this.updateUnits();
@@ -73,13 +73,13 @@ export class ClientComponent {
   }
 
   // отправка данных websocket на сервер
-  sendToServer(message) {
+  sendToServer(message): void {
     console.log(`New message ${message.type}`);
     this.chatService.messages.next(message);
   }
 
   // обработка двойного нажатия по полю, либо прикосновения на touch-устройствах
-  baseDbClick(e) {
+  baseDbClick(e): void {
     if(!this.name) {
       this.askName();
     }
@@ -118,7 +118,7 @@ export class ClientComponent {
   }
 
   // создание нового блока
-  createUnit(message){
+  createUnit(message): boolean {
     if(this.getUnitsCount(message.data.name) >= this.limit || this.unitCount >= this.limit) {
       if(this.name == message.data.name) {
         let audio = <HTMLAudioElement>document.getElementById("audio-er");
@@ -150,12 +150,12 @@ export class ClientComponent {
   }
 
   // проверка превышения допустимого количества блоков
-  getUnitsCount(name) {
+  getUnitsCount(name): number {
     return this.unitService.checkLimit(name);
   }
 
   // добавление лога поле информации
-  addMessage(message) {
+  addMessage(message): void {
     var messageContainer = document.querySelector('#messages'),
         messageItem = document.createElement('li');
 
@@ -177,7 +177,7 @@ export class ClientComponent {
   }
 
   // отправка сообщения в чат
-  sendHello() {
+  sendHello(): void {
     if(this.text && this.name) {
       var message = {
           type: <string> 'hello',
@@ -191,17 +191,17 @@ export class ClientComponent {
     }
   }
 
-  prevent(e) {
+  prevent(e): void {
     e.preventDefault();
   }
 
   // проверка на возможность перетасивать блок
-  canDrag(e) {
+  canDrag(e): boolean {
       return this.units.find(x => x.target == e).name == this.data.name;
   }
 
   //обработка начала перемещения блока
-  dragstart(ev) {
+  dragstart(ev): void {
     this.currentDrag = ev.target;
     if (ev.type !== 'touchstart') {
       this.dragInfo.offsetX = ev.offsetX;
@@ -209,12 +209,12 @@ export class ClientComponent {
     }
   }
 
-  dragover(ev) {
+  dragover(ev): void {
     ev.preventDefault();
   }
 
   // обработка события drop или touchend для touch устройств
-  drop(ev) {
+  drop(ev): void {
     ev.preventDefault();
     let base = document.querySelector("#base");
 
@@ -274,13 +274,13 @@ export class ClientComponent {
   }
 
   // обработка события drop при получении сообщения от сервера
-  dropUnit(message) {
+  dropUnit(message): void {
     this.unitService.updateUnit(new Unit(message.data.target, message.data.name, message.data.clientX, message.data.clientY));
     this.updateUnits();
   }
 
   // удаление определенного блока
-  destroyUnit(id) {
+  destroyUnit(id): void {
     let unit = this.units.find(x => x.target == id);
 
     if(unit.name !== this.name) {
@@ -305,20 +305,20 @@ export class ClientComponent {
   }
 
   // обработка события "удаление определенного блока" при получении сообщения от сервера
-  deleteUnit(message) {
+  deleteUnit(message): void {
     this.unitService.deleteUnit(message.data.target);
     this.updateUnits();
   }
 
   // возврат случайной координаты для нового блока
-  getRandomCoords(x) {
+  getRandomCoords(x): string {
     let base = document.querySelector("#base");
     let res = x == 'x' ? Math.floor(Math.random()*(base.clientWidth - 80) + 1) : Math.floor(Math.random()*(base.clientHeight - 80) + 1);
     return res+'';
   }
 
   //проверка набора очков
-  checkPoints(){
+  checkPoints(): void {
     if (this.points == this.limit) {
       this.isWinner = true;
       this.data.name = this.name;
@@ -333,7 +333,7 @@ export class ClientComponent {
   }
 
   // проверка при окончании игры
-  gameResult(name) {
+  gameResult(name): void {
     if (name != this.name) {
       this.isLoser = true;
     }

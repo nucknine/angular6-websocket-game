@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ChatService } from '../shared/chat.service';
 import { Player } from './player';
 import { UnitsService } from '../shared/units.service';
+import { Unit } from '../unit/unit';
 
 @Component({
   selector: 'app-host',
@@ -9,7 +10,7 @@ import { UnitsService } from '../shared/units.service';
   styleUrls: ['./host.component.scss']
 })
 export class HostComponent {
-  units;
+  units:Array<Unit>;
   players: Array<Player> = [];
   currentName: string;
   currentUnits: number = 1;
@@ -29,7 +30,7 @@ export class HostComponent {
     })
   }
 
-  addUnit(message) {
+  addUnit(message): void {
     if (!this.players.find(x => x.name == message.data.name)) {
       this.players.push(new Player(message.data.name, this.currentUnits));
     } else {
@@ -37,13 +38,12 @@ export class HostComponent {
     }
   }
 
-  removeUnit(message) {
-    console.log(message.data.points);
+  removeUnit(message): void {
     this.players.find(x => x.name == message.data.deletedName).units -= 1;
     this.players.find(x => x.name == message.data.name).points = message.data.points;
   }
 
-  gameResult(name) {
+  gameResult(name): void {
     this.winner = true;
     this.players.find(x => x.name == name).winStatus = 'победа';
   }
