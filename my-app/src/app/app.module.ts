@@ -26,7 +26,7 @@ import { UnitsService } from './shared/units.service';
     FormsModule,
     RouterModule.forRoot(routes)
   ],
-  providers: [ WebsocketService, ChatService, UnitsService],
+  providers: [WebsocketService, ChatService, UnitsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
